@@ -2,9 +2,10 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.2.1
+  docker: circleci/docker@1.4.0
 
 jobs:
-  build-and-test:
+  test:
     executor: python/default
     steps:
       - checkout
@@ -14,8 +15,35 @@ jobs:
       - run:
           command: ./manage.py test
           name: Test
-
+  build-and-push:
+    environment:
+      DOCKER_IMAGE: buivietanh/django-demo
+      DOCKER_TAG: latest
+    executor: docker/docker
+    steps:
+      - setup_remote_docker
+      - checkout
+      - docker/check:
+          docker-username: DOCKER_LOGIN
+          docker-password: DOCKER_PASSWORD
+      - docker/build:
+          image: $DOCKER_IMAGE
+          tag: $DOCKER_TAG
+      - docker/push:
+          digest-path: /tmp/digest.txt
+          image: $DOCKER_IMAGE
+          tag: $DOCKER_TAG
+      - run:
+          command: |
+            echo "Digest is: $(</tmp/digest.txt)"
 workflows:
   main:
     jobs:
-      - build-and-test
+      - test
+      - build-and-push
+        requires:
+          - test
+        filters:
+            branches:
+              only:
+                - master
