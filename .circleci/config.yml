@@ -40,7 +40,7 @@ workflows:
   main:
     jobs:
       - test
-      - build-and-push
+      - build-and-push:
         requires:
           - test
         filters:
