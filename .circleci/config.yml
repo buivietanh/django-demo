@@ -41,9 +41,9 @@ workflows:
     jobs:
       - test
       - build-and-push:
-        requires:
-          - test
-        filters:
-            branches:
-              only:
-                - master
+          requires:
+            - test
+          filters:
+              branches:
+                only:
+                  - master
