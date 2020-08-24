@@ -36,6 +36,15 @@ jobs:
       - run:
           command: |
             echo "Digest is: $(</tmp/digest.txt)"
+  deploy:
+    executor: docker/docker
+    steps:
+      # Please add $SSH_KEY_FINGERPRINT, $DEPLOYED_USER@ and DEPLOYED_SERVER to project's environment
+      - add_ssh_keys:
+          fingerprints:
+            - $SSH_KEY_FINGERPRINT
+      - run: ssh -oStrictHostKeyChecking=no $DEPLOYED_USER@$DEPLOYED_SERVER './deploy.sh'
+
 workflows:
   main:
     jobs:
@@ -47,3 +56,7 @@ workflows:
               branches:
                 only:
                   - master
+      # uncomment the 3 following lines to enable deploying
+      - deploy:
+         requires:
+           - build-and-push

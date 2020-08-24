@@ -1,0 +1,6 @@
+version: "3.3"
+services:
+  django-demo:
+    image: buivietanh/django-demo:latest
+    ports:
+    - "81:8080"
